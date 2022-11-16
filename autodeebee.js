@@ -27,8 +27,9 @@ module.exports = class Autodeebee {
     return this.bee.feed
   }
 
-  close () {
-    return this.bee.close()
+  async close () {
+    await this.autobase.close()
+    this.autobase = null
   }
 
   sub (name) {
@@ -49,6 +50,7 @@ module.exports = class Autodeebee {
     const op = b4a.from(
       JSON.stringify({ type: 'put', key, value, prefix: this.bee.prefix })
     )
+
     return await this.autobase.append(op)
   }
 
@@ -63,8 +65,28 @@ module.exports = class Autodeebee {
     return await this.bee.get(key)
   }
 
+  addInput (input) {
+    this.autobase.addInput(input)
+  }
+
+  removeInput (input) {
+    this.autobase.removeInput(input)
+  }
+
   createReadStream (opts) {
     return this.bee.createReadStream(opts)
+  }
+
+  createHistoryStream (opts) {
+    return this.bee.createHistoryStream(opts)
+  }
+
+  createDiffStream (opts) {
+    return this.bee.createDiffStream(opts)
+  }
+
+  version() {
+    return this.bee.version
   }
 }
 
@@ -80,7 +102,9 @@ async function applyAutobeeBatch (bee, batch) {
     if (op.type === 'put') {
       await b.put(bufKey, b4a.from(op.value))
     }
-    if (op.type === 'del') await b.del(bufKey)
+    if (op.type === 'del') {
+      await b.del(bufKey)
+    }
   }
   await b.flush()
 }
