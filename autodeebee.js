@@ -2,10 +2,10 @@ const Hyperbee = require('hyperbee')
 const b4a = require('b4a')
 
 module.exports = class Autodeebee {
-  constructor (autobase, opts) {
+  constructor (autobase, opts = {}) {
     this.autobase = autobase
     this.opts = opts
-    if (!opts?.sub) {
+    if (!opts.sub) {
       this.autobase.start({
         unwrap: true,
         apply: applyAutobeeBatch,
@@ -33,7 +33,7 @@ module.exports = class Autodeebee {
   }
 
   sub (name) {
-    const opts = this.opts ?? {}
+    const opts = this.opts
     opts.sub = true
     const auto = new Autodeebee(this.autobase, opts)
     auto.bee = this.bee.sub(name)
@@ -85,7 +85,7 @@ module.exports = class Autodeebee {
     return this.bee.createDiffStream(opts)
   }
 
-  version() {
+  version () {
     return this.bee.version
   }
 }

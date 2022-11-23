@@ -143,10 +143,9 @@ class Collection {
       const initialDoc = {}
       for (const queryField of Object.keys(query)) {
         const queryValue = query[queryField]
-        if(queryValue.typeof === 'object') {
+        if (queryValue.typeof === 'object') {
           if ('$eq' in queryValue) initialDoc[queryField] = queryValue.$eq
-        }
-        else if (!isQueryObject(queryValue)) {
+        } else if (!isQueryObject(queryValue)) {
           initialDoc[queryField] = queryValue
         }
       }
@@ -530,7 +529,7 @@ class Cursor {
         )
 
         const opts = {
-          reverse: sort?.direction === -1
+          reverse: sort && sort.direction === -1
         }
         if (gt && gt.length) {
           opts.gt = gt
@@ -673,7 +672,7 @@ function ensureComparable (value) {
 function compareEq (docValue, queryValue) {
   if (Array.isArray(docValue)) {
     return docValue.some((item) => compareEq(item, queryValue))
-  } else if (typeof docValue?.equals === 'function') {
+  } else if (docValue && typeof docValue.equals === 'function') {
     return docValue.equals(queryValue)
   } else {
     return queryValue === docValue
