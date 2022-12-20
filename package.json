@@ -27,7 +27,7 @@
   "types": "index.d.ts",
   "dependencies": {
     "bson": "^4.3.0",
-    "cbor": "^5.2.0"
+    "cbor": "^8.1.0"
   },
   "devDependencies": {
     "autobase": "https://github.com/hypercore-protocol/autobase",
