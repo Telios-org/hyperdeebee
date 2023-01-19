@@ -1,6 +1,6 @@
 const BSON = require('bson')
 const { ObjectID } = BSON
-const cbor = require('cbor')
+const cbor = require('cbor-sync')
 
 // Version of the indexing algorithm
 // Will be incremented for breaking changes
