@@ -1,6 +1,6 @@
 const BSON = require('bson')
 const { ObjectID } = BSON
-const cbor = require('cbor')
+const cbor = require('cbor-sync')
 
 // Version of the indexing algorithm
 // Will be incremented for breaking changes
@@ -279,18 +279,14 @@ class Collection {
   async _deIndexDocument (bee, fields, doc) {
     if (!hasFields(doc, fields)) return
 
-    try {
-      const batch = bee.batch()
+    const batch = bee.batch()
 
-      for (const flattened of flattenDocument(doc, fields)) {
-        const idxKey = makeIndexKeyV2(flattened, fields)
-        await batch.del(idxKey)
-      }
-
-      await batch.flush()
-    } catch (err) {
-      console.log(err)
+    for (const flattened of flattenDocument(doc, fields)) {
+      const idxKey = makeIndexKeyV2(flattened, fields)
+      await batch.del(idxKey)
     }
+
+    await batch.flush()
   }
 
   // TODO: Cache indexes?
