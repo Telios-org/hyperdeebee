@@ -107,7 +107,7 @@ class Collection {
   }
 
   async update (query = {}, update = {}, options = {}) {
-    const { upsert = false, multi = false, hint = null } = options
+    const { upsert = false, multi = false, hint = null, deIndex = true } = options
 
     let nMatched = 0
     let nUpserted = 0
@@ -133,7 +133,9 @@ class Collection {
         // TODO: Cache index subs
         const bee = this.idx.sub(name)
 
-        await this._deIndexDocument(bee, fields, doc)
+        if (deIndex) {
+          await this._deIndexDocument(bee, fields, doc)
+        }
         await this._indexDocument(bee, fields, newDoc)
       }
       nModified++
@@ -277,14 +279,18 @@ class Collection {
   async _deIndexDocument (bee, fields, doc) {
     if (!hasFields(doc, fields)) return
 
-    const batch = bee.batch()
+    try {
+      const batch = bee.batch()
 
-    for (const flattened of flattenDocument(doc, fields)) {
-      const idxKey = makeIndexKeyV2(flattened, fields)
-      await batch.del(idxKey)
+      for (const flattened of flattenDocument(doc, fields)) {
+        const idxKey = makeIndexKeyV2(flattened, fields)
+        await batch.del(idxKey)
+      }
+
+      await batch.flush()
+    } catch (err) {
+      console.log(err)
     }
-
-    await batch.flush()
   }
 
   // TODO: Cache indexes?
