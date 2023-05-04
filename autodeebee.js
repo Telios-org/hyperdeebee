@@ -33,7 +33,7 @@ module.exports = class Autodeebee {
   }
 
   sub (name) {
-    const opts = this.opts
+    const opts = { ...this.opts }
     opts.sub = true
     const auto = new Autodeebee(this.autobase, opts)
     auto.bee = this.bee.sub(name)
